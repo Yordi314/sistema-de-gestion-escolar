@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center mt-4">
+    <div class="col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">➕ Alta de Usuario</h4>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('registro') }}">
+                    <div class="mb-3">
+                        <label class="form-label">Rol del Usuario</label>
+                        <select name="rol" class="form-select" required>
+                            <option value="" disabled selected>Seleccione...</option>
+                            <option value="Estudiante">Estudiante</option>
+                            <option value="Profesor">Profesor</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Cédula / ID Único</label>
+                        <input type="text" name="uid" class="form-control" required placeholder="Ej: V-12345678">
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label">Nombre Completo</label>
+                        <input type="text" name="nombre" class="form-control" required placeholder="Juan Pérez">
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ url_for('admin_dashboard') }}"
+                            class="btn btn-outline-warning text-dark">Cancelar</a>
+                        <button type="submit" class="btn btn-primary">Crear Usuario</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

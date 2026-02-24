@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h2 class="mb-4">👨‍💼 Panel de Administrador</h2>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card text-white bg-primary shadow-sm mb-3">
+            <div class="card-body">
+                <h5 class="card-title">Usuarios Totales</h5>
+                <p class="card-text fs-2">{{ users|length }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-dark bg-warning shadow-sm mb-3">
+            <div class="card-body">
+                <h5 class="card-title">Cursos Activos</h5>
+                <p class="card-text fs-2">{{ courses|length }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-4 mb-3">
+        <a href="{{ url_for('registro') }}" class="btn btn-outline-primary w-100 py-3">➕ Registrar Nuevo Usuario</a>
+    </div>
+    <div class="col-md-4 mb-3">
+        <a href="{{ url_for('crear_curso') }}" class="btn btn-outline-primary w-100 py-3">📚 Crear Nuevo Curso</a>
+    </div>
+</div>
+
+<h4 class="mt-5 mb-3">Cursos Disponibles (Inscripción)</h4>
+<div class="table-responsive">
+    <table class="table table-hover table-bordered align-middle">
+        <thead class="table-dark">
+            <tr>
+                <th>Código</th>
+                <th>Nombre</th>
+                <th>Inscritos</th>
+                <th>Acción</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for c in courses %}
+            <tr>
+                <td>{{ c.id }}</td>
+                <td>{{ c.name }}</td>
+                <td><span class="badge bg-warning text-dark">{{ c.student_ids|length }} Estudiantes</span></td>
+                <td>
+                    <a href="{{ url_for('inscribir_estudiante', cid=c.id) }}" class="btn btn-sm btn-primary">Matricular
+                        Alumnos</a>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="4" class="text-center text-muted">Aún no hay cursos creados.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<hr class="my-5">
+
+<div class="row text-center mb-5">
+    <div class="col-12">
+        <a href="{{ url_for('admin_lista_usuarios') }}" class="btn btn-primary btn-lg px-5 rounded-pill shadow-sm">
+            <i class="bi bi-people-fill me-2"></i> Ver Todos los Usuarios
+        </a>
+    </div>
+</div>
+
+{% endblock %}

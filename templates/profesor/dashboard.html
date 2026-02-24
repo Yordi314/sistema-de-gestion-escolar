@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row align-items-center mt-3 mb-4">
+    <div class="col-8">
+        <h2>Panel de Profesor: {{ profesor.name }}</h2>
+        <p class="text-muted">Cédula: {{ profesor.id }}</p>
+    </div>
+    <div class="col-4 text-end">
+        <a href="{{ url_for('profesor_dashboard') }}" class="btn btn-outline-danger">Cerrar Sesión</a>
+    </div>
+</div>
+
+{% if not cursos %}
+<div class="alert alert-warning text-dark">Actualmente no tienes cursos asignados para impartir.</div>
+{% else %}
+{% for curso in cursos %}
+<div class="card shadow-sm mb-4">
+    <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">{{ curso.name }}</h5>
+        <small>Código: {{ curso.id }}</small>
+    </div>
+    <div class="card-body">
+        {% if not curso.student_ids %}
+        <p class="text-muted mb-0">No hay estudiantes inscritos en este curso todavía.</p>
+        {% else %}
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Cédula</th>
+                        <th>Nombre del Estudiante</th>
+                        <th>Calificación Actual</th>
+                        <th>Actualizar Nota (0-100)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for sid in curso.student_ids %}
+                    {% set estudiante = get_student(sid) %}
+                    {% set nota_actual = curso.grades.get(sid, '') %}
+                    <tr>
+                        <td>{{ estudiante.id }}</td>
+                        <td>{{ estudiante.name }}</td>
+                        <td>
+                            {% if nota_actual == '' %}
+                            <span class="badge bg-warning text-dark">Sin Calificar</span>
+                            {% else %}
+                            <span class="badge bg-warning text-dark">{{ nota_actual }} pts</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <form method="POST" action="{{ url_for('profesor_vista_cursos', prof_id=profesor.id) }}"
+                                class="d-flex align-items-center gap-2">
+                                <input type="hidden" name="course_id" value="{{ curso.id }}">
+                                <input type="hidden" name="student_id" value="{{ estudiante.id }}">
+                                <input type="number" name="nota" class="form-control form-control-sm"
+                                    style="width: 90px;" min="0" max="100" step="0.1" value="{{ nota_actual }}"
+                                    required>
+                                <button type="submit" class="btn btn-sm btn-primary">Guardar</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endfor %}
+{% endif %}
+{% endblock %}

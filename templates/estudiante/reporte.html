@@ -1,0 +1,50 @@
+<!-- REPORTE ESTUDIANTE -->
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row align-items-center mt-3 mb-4">
+    <div class="col-8">
+        <h2>Boletín Académico: {{ reporte.estudiante }}</h2>
+        <p class="text-muted">Cédula Estudiantil: {{ reporte.id }}</p>
+    </div>
+    <div class="col-4 text-end">
+        <a href="{{ url_for('estudiante_dashboard') }}" class="btn btn-outline-danger">Cerrar Sesión</a>
+    </div>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        {% if not reporte.cursos %}
+        <div class="alert alert-warning text-dark text-center mb-0">No estás inscrito en ningún curso este semestre.
+        </div>
+        {% else %}
+        <div class="table-responsive">
+            <table class="table table-striped table-hover mt-2">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Código</th>
+                        <th>Materia</th>
+                        <th class="text-center">Calificación Final</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for c in reporte.cursos %}
+                    <tr>
+                        <td>{{ c.curso_id }}</td>
+                        <td>{{ c.curso_nombre }}</td>
+                        <td class="text-center">
+                            {% if c.calificacion == 'N/A' %}
+                            <span class="badge bg-dark text-white">Pendiente de Evaluar</span>
+                            {% else %}
+                            <span class="badge bg-warning text-dark fs-6">{{ c.calificacion }} / 100</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

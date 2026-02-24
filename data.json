@@ -1,0 +1,66 @@
+{
+    "users": {
+        "PRF-01": {
+            "id": "PRF-01",
+            "name": "Dra. Ada Lovelace",
+            "role": "Professor"
+        },
+        "PRF-02": {
+            "id": "PRF-02",
+            "name": "Dr. Alan Turing",
+            "role": "Professor"
+        },
+        "EST-01": {
+            "id": "EST-01",
+            "name": "Juan Pérez",
+            "role": "Student"
+        },
+        "EST-02": {
+            "id": "EST-02",
+            "name": "María García",
+            "role": "Student"
+        },
+        "EST-03": {
+            "id": "EST-03",
+            "name": "Carlos López",
+            "role": "Student"
+        }
+    },
+    "courses": {
+        "CUR-01": {
+            "id": "CUR-01",
+            "name": "Introducción a la Programación",
+            "professor_id": "PRF-01",
+            "student_ids": [
+                "EST-01",
+                "EST-02"
+            ],
+            "grades": {
+                "EST-01": 95.0,
+                "EST-02": 88.0
+            }
+        },
+        "CUR-02": {
+            "id": "CUR-02",
+            "name": "Estructuras de Datos",
+            "professor_id": "PRF-02",
+            "student_ids": [
+                "EST-02",
+                "EST-03"
+            ],
+            "grades": {
+                "EST-02": 92.0
+            }
+        },
+        "CUR-03": {
+            "id": "CUR-03",
+            "name": "Ingeniería de Software",
+            "professor_id": "PRF-01",
+            "student_ids": [
+                "EST-01",
+                "EST-03"
+            ],
+            "grades": {}
+        }
+    }
+}

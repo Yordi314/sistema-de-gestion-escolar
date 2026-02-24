@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center mt-4">
+    <div class="col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">📝 Inscribir a: {{ curso.name }}</h4>
+            </div>
+            <div class="card-body">
+                <p>Estudiantes actualmente inscritos: <strong>{{ curso.student_ids|length }}</strong></p>
+                <form method="POST" action="{{ url_for('inscribir_estudiante', cid=curso.id) }}">
+                    <div class="mb-4">
+                        <label class="form-label">Seleccione estudiantes disponibles:</label>
+                        {% if estudiantes %}
+                        <select name="estudiantes" class="form-select" multiple size="6" required>
+                            {% for est in estudiantes %}
+                            <option value="{{ est.id }}">{{ est.name }} ({{ est.id }})</option>
+                            {% endfor %}
+                        </select>
+                        <div class="form-text">Mantenga presionado Ctrl (o Cmd en Mac) para seleccionar múltiples
+                            estudiantes.</div>
+                        {% else %}
+                        <div class="alert alert-warning">No hay más estudiantes disponibles para inscribir en este
+                            curso.</div>
+                        {% endif %}
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline-warning text-dark">Volver</a>
+                        <button type="submit" class="btn btn-primary" {% if not estudiantes %}disabled{% endif
+                            %}>Inscribir
+                            Seleccionados</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

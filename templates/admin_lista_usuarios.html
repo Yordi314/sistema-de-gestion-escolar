@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h2 class="mb-0">👥 Listado de Usuarios</h2>
+        <p class="text-muted">Consulta y filtra todos los profesores y estudiantes matriculados en el Colegio San
+            Ignacio.</p>
+    </div>
+    <div class="col-md-4 text-md-end mt-3 mt-md-0">
+        <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline-primary">
+            <i class="bi bi-arrow-left"></i> Volver al Panel
+        </a>
+    </div>
+</div>
+
+<!-- Barra de Búsqueda -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="input-group input-group-lg shadow-sm">
+            <span class="input-group-text bg-white text-muted border-end-0">
+                <i class="bi bi-search"></i>
+            </span>
+            <input type="text" id="userSearchBar" class="form-control border-start-0 ps-0"
+                placeholder="Buscar por nombre, ID o rol..." autofocus>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Tabla de Profesores -->
+    <div class="col-md-6 mb-4">
+        <h4 class="mb-3 text-primary"><i class="bi bi-person-workspace"></i> Profesores (<span class="user-counter"
+                id="profCount">0</span>)</h4>
+        <div class="table-responsive bg-white rounded-3 shadow-sm border">
+            <table class="table table-hover align-middle mb-0" id="profTable">
+                <thead class="table-light">
+                    <tr>
+                        <th>ID (Cédula)</th>
+                        <th>Nombre Completo</th>
+                        <th>Rol</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% set prof_count = 0 %}
+                    {% for u in users %}
+                    {% if u|is_professor %}
+                    <tr class="user-row">
+                        <td>{{ u.id }}</td>
+                        <td class="user-name">{{ u.name }}</td>
+                        <td><span class="badge bg-primary rounded-pill user-role">Profesor</span></td>
+                    </tr>
+                    {% set prof_count = prof_count + 1 %}
+                    {% endif %}
+                    {% endfor %}
+                    <tr id="profNoResults" style="display: none;">
+                        <td colspan="3" class="text-center text-muted fst-italic py-3">No se encontraron profesores que
+                            coincidan con la búsqueda.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Tabla de Estudiantes -->
+    <div class="col-md-6 mb-4">
+        <h4 class="mb-3 text-dark"><i class="bi bi-mortarboard"></i> Estudiantes (<span class="user-counter"
+                id="stdCount">0</span>)</h4>
+        <div class="table-responsive bg-white rounded-3 shadow-sm border">
+            <table class="table table-hover align-middle mb-0" id="stdTable">
+                <thead class="table-light">
+                    <tr>
+                        <th>ID (Matrícula)</th>
+                        <th>Nombre Completo</th>
+                        <th>Rol</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% set std_count = 0 %}
+                    {% for u in users %}
+                    {% if u|is_student %}
+                    <tr class="user-row">
+                        <td>{{ u.id }}</td>
+                        <td class="user-name">{{ u.name }}</td>
+                        <td><span class="badge bg-dark text-white rounded-pill user-role">Estudiante</span></td>
+                    </tr>
+                    {% set std_count = std_count + 1 %}
+                    {% endif %}
+                    {% endfor %}
+                    <tr id="stdNoResults" style="display: none;">
+                        <td colspan="3" class="text-center text-muted fst-italic py-3">No se encontraron estudiantes que
+                            coincidan con la búsqueda.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const searchInput = document.getElementById("userSearchBar");
+        const userRows = document.querySelectorAll(".user-row");
+
+        // Inicializar contadores
+        updateCounters();
+
+        searchInput.addEventListener("keyup", function () {
+            const term = searchInput.value.toLowerCase().trim();
+
+            userRows.forEach(row => {
+                const textContent = row.textContent.toLowerCase();
+                const match = textContent.includes(term);
+                row.style.display = match ? "" : "none";
+            });
+
+            updateCounters();
+        });
+
+        function updateCounters() {
+            // Check professors
+            const profTable = document.getElementById("profTable");
+            const profRows = Array.from(profTable.querySelectorAll(".user-row")).filter(row => row.style.display !== "none");
+            document.getElementById("profCount").innerText = profRows.length;
+            document.getElementById("profNoResults").style.display = profRows.length === 0 ? "" : "none";
+
+            // Check students
+            const stdTable = document.getElementById("stdTable");
+            const stdRows = Array.from(stdTable.querySelectorAll(".user-row")).filter(row => row.style.display !== "none");
+            document.getElementById("stdCount").innerText = stdRows.length;
+            document.getElementById("stdNoResults").style.display = stdRows.length === 0 ? "" : "none";
+        }
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,34 @@
+<!-- INGRESO PROFESOR -->
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center mt-5">
+    <div class="col-md-5">
+        <div class="card shadow-sm">
+            <div class="card-header bg-dark text-white">
+                <h5 class="mb-0">Acceso Profesor</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('profesor_dashboard') }}">
+                    <input type="hidden" name="action" value="ingresar">
+                    <div class="mb-3">
+                        <label class="form-label">Seleccione su Perfil</label>
+                        <select name="prof_id" class="form-select" required>
+                            <option value="" disabled selected>Elige tu nombre...</option>
+                            {% for prof in profesores %}
+                            <option value="{{ prof.id }}">{{ prof.name }} ({{ prof.id }})</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-dark w-100" {% if not profesores %}disabled{% endif %}>Entrar
+                        al Portal</button>
+                    {% if not profesores %}
+                    <div class="form-text text-danger mt-2">No hay profesores registrados. El administrador debe crear
+                        uno.</div>
+                    {% endif %}
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

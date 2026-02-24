@@ -1,0 +1,122 @@
+:root {
+    /* Primary / Azul Institucional */
+    --bs-primary: #223A70;
+    --bs-primary-rgb: 34, 58, 112;
+
+    /* Warning / Accent / Dorado Académico */
+    --bs-warning: #FFC72C;
+    --bs-warning-rgb: 255, 199, 44;
+
+    /* Danger / Rojo Carmesí */
+    --bs-danger: #BA0C2F;
+    --bs-danger-rgb: 186, 12, 47;
+
+    /* Light / Gris Claro */
+    --bs-light: #F4F5F7;
+    --bs-light-rgb: 244, 245, 247;
+
+    /* Dark / Gris Carbón */
+    --bs-dark: #2C3136;
+    --bs-dark-rgb: 44, 49, 54;
+
+    /* Body Adjustments */
+    --bs-body-bg: #F4F5F7;
+    --bs-body-bg-rgb: 244, 245, 247;
+    --bs-body-color: #2C3136;
+    --bs-body-color-rgb: 44, 49, 54;
+}
+
+/* Base resets & utilities overrides */
+body {
+    background-color: var(--bs-body-bg) !important;
+    color: var(--bs-body-color) !important;
+}
+
+.text-dark {
+    color: var(--bs-dark) !important;
+}
+
+.bg-light {
+    background-color: var(--bs-light) !important;
+}
+
+.bg-white {
+    background-color: #FFFFFF !important;
+}
+
+.bg-primary {
+    background-color: var(--bs-primary) !important;
+}
+
+.text-primary {
+    color: var(--bs-primary) !important;
+}
+
+.border-primary {
+    border-color: var(--bs-primary) !important;
+}
+
+.bg-warning {
+    background-color: var(--bs-warning) !important;
+}
+
+.text-warning {
+    color: var(--bs-warning) !important;
+}
+
+.bg-danger {
+    background-color: var(--bs-danger) !important;
+}
+
+.text-danger {
+    color: var(--bs-danger) !important;
+}
+
+.bg-dark {
+    background-color: var(--bs-dark) !important;
+}
+
+/* Button variants customization */
+.btn-primary {
+    --bs-btn-bg: #223A70;
+    --bs-btn-border-color: #223A70;
+    --bs-btn-hover-bg: #1c305d;
+    --bs-btn-hover-border-color: #1a2c55;
+    --bs-btn-active-bg: #1a2c55;
+    --bs-btn-active-border-color: #18284e;
+}
+
+.btn-outline-primary {
+    --bs-btn-color: #223A70;
+    --bs-btn-border-color: #223A70;
+    --bs-btn-hover-bg: #223A70;
+    --bs-btn-hover-border-color: #223A70;
+    --bs-btn-hover-color: #ffffff;
+    --bs-btn-active-bg: #223A70;
+    --bs-btn-active-border-color: #223A70;
+}
+
+.btn-warning {
+    --bs-btn-color: #000;
+    --bs-btn-bg: #FFC72C;
+    --bs-btn-border-color: #FFC72C;
+    --bs-btn-hover-bg: #e6b328;
+    --bs-btn-hover-border-color: #d9a925;
+    --bs-btn-active-bg: #d9a925;
+    --bs-btn-active-border-color: #cc9f23;
+}
+
+.btn-danger {
+    --bs-btn-bg: #BA0C2F;
+    --bs-btn-border-color: #BA0C2F;
+    --bs-btn-hover-bg: #a70b2a;
+    --bs-btn-hover-border-color: #950a26;
+    --bs-btn-active-bg: #950a26;
+    --bs-btn-active-border-color: #820821;
+}
+
+/* Specific elements adjustments */
+hr.text-secondary {
+    border-color: var(--bs-primary) !important;
+    opacity: 0.2;
+}
