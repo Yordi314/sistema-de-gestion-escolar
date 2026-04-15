@@ -19,8 +19,8 @@
     <div class="col-md-4">
         <div class="card text-dark bg-warning shadow-sm mb-3">
             <div class="card-body">
-                <h5 class="card-title">Cursos Activos</h5>
-                <p class="card-text fs-2">{{ courses|length }}</p>
+                <h5 class="card-title">Cursos Activos (Todos)</h5>
+                <p class="card-text fs-2">{{ courses_pagination.total }}</p>
             </div>
         </div>
     </div>
@@ -35,7 +35,17 @@
     </div>
 </div>
 
-<h4 class="mt-5 mb-3">Cursos Disponibles (Inscripción)</h4>
+<div class="d-flex justify-content-between align-items-center mt-5 mb-3">
+    <h4 class="mb-0">Cursos Disponibles (Inscripción)</h4>
+    <form method="GET" action="{{ url_for('admin_dashboard') }}" class="d-flex">
+        <input type="text" name="q_course" value="{{ q_course }}" class="form-control me-2" placeholder="Buscar curso...">
+        <button type="submit" class="btn btn-primary"><i class="bi bi-search"></i></button>
+        {% if q_course %}
+        <a href="{{ url_for('admin_dashboard') }}" class="btn btn-secondary ms-1"><i class="bi bi-x-lg"></i></a>
+        {% endif %}
+    </form>
+</div>
+
 <div class="table-responsive">
     <table class="table table-hover table-bordered align-middle">
         <thead class="table-dark">
@@ -47,11 +57,11 @@
             </tr>
         </thead>
         <tbody>
-            {% for c in courses %}
+            {% for c in courses_pagination.items %}
             <tr>
                 <td>{{ c.id }}</td>
-                <td>{{ c.name }}</td>
-                <td><span class="badge bg-warning text-dark">{{ c.student_ids|length }} Estudiantes</span></td>
+                <td>{{ c.nombre }}</td>
+                <td><span class="badge bg-warning text-dark">{{ c.enrollments|length }} Estudiantes</span></td>
                 <td>
                     <a href="{{ url_for('inscribir_estudiante', cid=c.id) }}" class="btn btn-sm btn-primary">Matricular
                         Alumnos</a>
@@ -59,12 +69,35 @@
             </tr>
             {% else %}
             <tr>
-                <td colspan="4" class="text-center text-muted">Aún no hay cursos creados.</td>
+                <td colspan="4" class="text-center text-muted py-4">No se encontraron cursos activos.</td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
 </div>
+
+<!-- Paginación de cursos -->
+{% if courses_pagination.pages > 1 %}
+<nav class="mt-3">
+    <ul class="pagination justify-content-center">
+        <li class="page-item {% if not courses_pagination.has_prev %}disabled{% endif %}">
+            <a class="page-link" href="{{ url_for('admin_dashboard', page_course=courses_pagination.prev_num, q_course=q_course) }}">Anterior</a>
+        </li>
+        {% for page_num in courses_pagination.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
+            {% if page_num %}
+                <li class="page-item {% if page_num == courses_pagination.page %}active{% endif %}">
+                    <a class="page-link" href="{{ url_for('admin_dashboard', page_course=page_num, q_course=q_course) }}">{{ page_num }}</a>
+                </li>
+            {% else %}
+                <li class="page-item disabled"><span class="page-link">...</span></li>
+            {% endif %}
+        {% endfor %}
+        <li class="page-item {% if not courses_pagination.has_next %}disabled{% endif %}">
+            <a class="page-link" href="{{ url_for('admin_dashboard', page_course=courses_pagination.next_num, q_course=q_course) }}">Siguiente</a>
+        </li>
+    </ul>
+</nav>
+{% endif %}
 
 <hr class="my-5">
 

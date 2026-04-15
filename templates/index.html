@@ -2,29 +2,32 @@
 
 {% block content %}
 <div class="row mt-5 align-items-center justify-content-center" style="min-height: 70vh;">
-    <div class="col-md-9 mx-auto text-center p-5 bg-white rounded-4 shadow-lg border-top border-5 border-primary">
-        <div class="mb-4">
-            <img src="{{ url_for('static', filename='img/logo.png') }}?v=1.2" alt="Escudo del Colegio" width="120"
-                height="120" class="img-fluid mb-3" style="object-fit: contain;">
+    <div class="col-md-5 mx-auto p-5 bg-white rounded-4 shadow-lg border-top border-5 border-primary">
+        <div class="text-center mb-4">
+            <img src="{{ url_for('static', filename='img/logo.png') }}?v=1.2" alt="Escudo del Colegio" width="100"
+                height="100" class="img-fluid mb-3" style="object-fit: contain;">
+            <h2 class="fw-bold text-dark mb-1">Iniciar Sesión</h2>
+            <p class="text-muted">Colegio San Ignacio</p>
         </div>
-        <h1 class="display-4 fw-bold text-dark mb-2">Colegio San Ignacio</h1>
-        <p class="lead text-muted fst-italic mb-4">"Virtus et Sapientia" (Virtud y Sabiduría)</p>
-
-        <hr class="my-4 text-primary w-75 mx-auto">
-
-        <p class="fs-5 text-dark mb-4">Sistema de Gestión Académica Integrado</p>
-
-        <div class="d-grid gap-3 d-sm-flex justify-content-sm-center">
-            <a href="{{ url_for('admin_dashboard') }}" class="btn btn-primary btn-lg px-4 gap-3 shadow-sm rounded-pill">
-                <i class="bi bi-shield-lock me-2"></i> Administrador
-            </a>
-            <a href="{{ url_for('profesor_dashboard') }}" class="btn btn-outline-primary btn-lg px-4 rounded-pill">
-                <i class="bi bi-person-workspace me-2"></i> Profesor
-            </a>
-            <a href="{{ url_for('estudiante_dashboard') }}" class="btn btn-outline-primary btn-lg px-4 rounded-pill">
-                <i class="bi bi-mortarboard me-2"></i> Estudiante
-            </a>
-        </div>
+        <form method="POST" action="{{ url_for('index') }}">
+            <div class="mb-3">
+                <label class="form-label text-muted fw-bold">ID / Matrícula / Cédula</label>
+                <div class="input-group">
+                    <span class="input-group-text bg-light"><i class="bi bi-person"></i></span>
+                    <input type="text" name="uid" class="form-control form-control-lg" required placeholder="Ej: EST-01" autofocus>
+                </div>
+            </div>
+            <div class="mb-4">
+                <label class="form-label text-muted fw-bold">Contraseña</label>
+                <div class="input-group">
+                    <span class="input-group-text bg-light"><i class="bi bi-key"></i></span>
+                    <input type="password" name="password" class="form-control form-control-lg" required placeholder="••••••••">
+                </div>
+            </div>
+            <div class="d-grid">
+                <button type="submit" class="btn btn-primary btn-lg rounded-pill shadow-sm">Acceder al Portal</button>
+            </div>
+        </form>
     </div>
 </div>
 {% endblock %}

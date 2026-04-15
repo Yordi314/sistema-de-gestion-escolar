@@ -31,15 +31,21 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('admin_dashboard') }}">Admin</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('profesor_dashboard') }}">Profesor</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('estudiante_dashboard') }}">Estudiante</a>
-                    </li>
+                    {% if current_user.is_authenticated %}
+                        {% if current_user.rol == 'ADMIN' %}
+                        <li class="nav-item"><a class="nav-link" href="{{ url_for('admin_dashboard') }}">Admin</a></li>
+                        {% elif current_user.rol == 'PROFESOR' %}
+                        <li class="nav-item"><a class="nav-link" href="{{ url_for('profesor_vista_cursos', prof_id=current_user.id) }}">Profesor</a></li>
+                        {% elif current_user.rol == 'ESTUDIANTE' %}
+                        <li class="nav-item"><a class="nav-link" href="{{ url_for('estudiante_dashboard') }}">Estudiante</a></li>
+                        {% endif %}
+                        <li class="nav-item ms-3 border-start ps-3 align-items-center d-flex">
+                            <span class="text-light me-3 opacity-75 fst-italic">Hola, {{ current_user.nombre.split()[0] }}</span>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-bg-danger rounded-pill px-3 shadow-sm fw-bold" href="{{ url_for('logout') }}"><i class="bi bi-box-arrow-right"></i> Salir</a>
+                        </li>
+                    {% endif %}
                 </ul>
             </div>
         </div>

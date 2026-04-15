@@ -1,83 +1,53 @@
-class User:
-    """Clase base abstracta para todos los usuarios del sistema MVC.
-    Define las propiedades comunes como el ID y el nombre.
-    """
-    def __init__(self, id: str, name: str):
-        self.id = id
-        self.name = name
+from flask_sqlalchemy import SQLAlchemy
+from flask_login import UserMixin
+from werkzeug.security import generate_password_hash, check_password_hash
 
-    def to_dict(self):
-        """Serializa la instancia a un diccionario para guardarlo en JSON."""
-        return {"id": self.id, "name": self.name, "role": self.__class__.__name__}
+db = SQLAlchemy()
 
-    @classmethod
-    def from_dict(cls, data: dict):
-        """Deserializa un diccionario instanciando el objeto base."""
-        return cls(data["id"], data["name"])
-
-
-class Student(User):
-    """Representa a un estudiante. Extiende la clase base User."""
-    def __init__(self, id: str, name: str):
-        super().__init__(id, name)
-
-
-class Professor(User):
-    """Representa a un profesor. Extiende la clase base User."""
-    def __init__(self, id: str, name: str):
-        super().__init__(id, name)
-
-
-class UserFactory:
-    """Implementación del patrón Factory Method (Fábrica de Usuarios).
+# Tabla Asociativa para la relación Muchos a Muchos entre User (Estudiante) y Course
+# Incluye la calificación (nota)
+class Enrollment(db.Model):
+    __tablename__ = 'enrollments'
+    student_id = db.Column(db.String, db.ForeignKey('users.id'), primary_key=True)
+    course_id = db.Column(db.String, db.ForeignKey('courses.id'), primary_key=True)
+    grade = db.Column(db.Float, nullable=True) # Calificación
     
-    Principio: Centraliza la creación de los objetos de tipo User (Estudiante, Profesor).
-    Esto aísla la lógica de instanciación del cliente (p.ej. el Controlador Flask 
-    solo necesita pasar los datos del <form> HTML y obtener el objeto correcto), 
-    lo que facilita agregar nuevos roles sin alterar enrutadores HTTP.
-    """
-    @staticmethod
-    def create_user(role: str, id: str, name: str) -> User:
-        """Crea una instancia de Student o Professor basado en la cadena del rol."""
-        role = role.upper()
-        if role == "ESTUDIANTE" or role == "STUDENT":
-            return Student(id, name)
-        elif role == "PROFESOR" or role == "PROFESSOR":
-            return Professor(id, name)
-        else:
-            raise ValueError(f"Rol desconocido: {role}")
-            
-    @staticmethod
-    def from_dict(data: dict) -> User:
-        """Helper para recrear el usuario correcto a partir de un dict cargado del JSON."""
-        return UserFactory.create_user(data.get("role", "ESTUDIANTE"), data["id"], data["name"])
+    # Relaciones
+    student = db.relationship("User", back_populates="enrollments")
+    course = db.relationship("Course", back_populates="enrollments")
 
+class User(db.Model, UserMixin):
+    __tablename__ = 'users'
+    id = db.Column(db.String, primary_key=True) # e.g. "EST-01", "PRF-01"
+    nombre = db.Column(db.String(100), nullable=False)
+    password_hash = db.Column(db.String(256), nullable=False)
+    rol = db.Column(db.String(20), nullable=False) # 'ADMIN', 'PROFESOR', 'ESTUDIANTE'
 
-class Course:
-    """Clase que representa un Curso en el sistema.
-    Mantiene referencias a su profesor, estudiantes inscritos y sus calificaciones.
-    """
-    def __init__(self, id: str, name: str, professor_id: str):
-        self.id = id
-        self.name = name
-        self.professor_id = professor_id
-        self.student_ids = []
-        self.grades = {}  # type: dict[str, float]
+    # Relaciones
+    courses_taught = db.relationship("Course", back_populates="professor", cascade="all, delete-orphan", lazy=True)
+    enrollments = db.relationship("Enrollment", back_populates="student", cascade="all, delete-orphan", lazy=True)
 
-    def to_dict(self):
-        """Serializa el curso a un diccionario."""
-        return {
-            "id": self.id,
-            "name": self.name,
-            "professor_id": self.professor_id,
-            "student_ids": self.student_ids,
-            "grades": self.grades
-        }
-        
-    @classmethod
-    def from_dict(cls, data: dict):
-        """Reconstruye la instancia del Curso a partir de un diccionario."""
-        course = cls(data["id"], data["name"], data["professor_id"])
-        course.student_ids = data.get("student_ids", [])
-        course.grades = data.get("grades", {})
-        return course
+    def set_password(self, password):
+        self.password_hash = generate_password_hash(password)
+
+    def check_password(self, password):
+        return check_password_hash(self.password_hash, password)
+
+    def is_admin(self):
+        return self.rol == 'ADMIN'
+
+    def is_professor(self):
+        return self.rol == 'PROFESOR'
+
+    def is_student(self):
+        return self.rol == 'ESTUDIANTE'
+
+class Course(db.Model):
+    __tablename__ = 'courses'
+    id = db.Column(db.String, primary_key=True) # e.g. "CUR-01"
+    nombre = db.Column(db.String(100), nullable=False)
+    profesor_id = db.Column(db.String, db.ForeignKey('users.id'), nullable=False)
+
+    # Relaciones
+    professor = db.relationship("User", back_populates="courses_taught")
+    enrollments = db.relationship("Enrollment", back_populates="course", cascade="all, delete-orphan", lazy=True)
