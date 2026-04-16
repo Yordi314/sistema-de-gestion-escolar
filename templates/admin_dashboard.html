@@ -1,112 +1,143 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="row">
-    <div class="col-12">
-        <h2 class="mb-4">👨‍💼 Panel de Administrador</h2>
+<div class="row align-items-center mb-4">
+    <div class="col-md-8">
+        <h3 class="fw-bold text-dark mb-1">Vista General de Administración</h3>
+        <p class="text-muted mb-0">Resumen del estado activo del periodo escolar.</p>
     </div>
 </div>
 
-<div class="row mb-4">
-    <div class="col-md-4">
-        <div class="card text-white bg-primary shadow-sm mb-3">
-            <div class="card-body">
-                <h5 class="card-title">Usuarios Totales</h5>
-                <p class="card-text fs-2">{{ users|length }}</p>
+<!-- Métricas Principales -->
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <div class="card hover-card h-100 p-2 border-start border-primary border-4">
+            <div class="card-body d-flex flex-column">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                     <h6 class="text-muted fw-bold mb-0 text-uppercase" style="font-size: 0.70rem;">Estudiantes</h6>
+                     <i class="bi bi-mortarboard fs-4 text-primary opacity-50"></i>
+                </div>
+                <div class="mt-auto">
+                    <h2 class="fw-bold text-dark mb-0">{{ metrics.total_students }}</h2>
+                </div>
             </div>
         </div>
     </div>
-    <div class="col-md-4">
-        <div class="card text-dark bg-warning shadow-sm mb-3">
-            <div class="card-body">
-                <h5 class="card-title">Cursos Activos (Todos)</h5>
-                <p class="card-text fs-2">{{ courses_pagination.total }}</p>
+    
+    <div class="col-md-3">
+        <div class="card hover-card h-100 p-2 border-start border-success border-4">
+            <div class="card-body d-flex flex-column">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                     <h6 class="text-muted fw-bold mb-0 text-uppercase" style="font-size: 0.70rem;">Profesores</h6>
+                     <i class="bi bi-person-video3 fs-4 text-success opacity-50"></i>
+                </div>
+                <div class="mt-auto">
+                    <h2 class="fw-bold text-dark mb-0">{{ metrics.total_professors }}</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card hover-card h-100 p-2 border-start border-info border-4">
+            <div class="card-body d-flex flex-column">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                     <h6 class="text-muted fw-bold mb-0 text-uppercase" style="font-size: 0.70rem;">Cursos</h6>
+                     <i class="bi bi-journal-bookmark fs-4 text-info opacity-50"></i>
+                </div>
+                <div class="mt-auto">
+                    <h2 class="fw-bold text-dark mb-0">{{ metrics.total_courses }}</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card hover-card h-100 p-2 border-start border-warning border-4">
+            <div class="card-body d-flex flex-column">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                     <h6 class="text-muted fw-bold mb-0 text-uppercase" style="font-size: 0.70rem;">Pendientes</h6>
+                     <i class="bi bi-bell fs-4 text-warning opacity-50"></i>
+                </div>
+                <div class="mt-auto">
+                    <h2 class="fw-bold text-dark mb-0">{{ metrics.pending_requests }}</h2>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
-<div class="row">
-    <div class="col-md-4 mb-3">
-        <a href="{{ url_for('registro') }}" class="btn btn-outline-primary w-100 py-3">➕ Registrar Nuevo Usuario</a>
-    </div>
-    <div class="col-md-4 mb-3">
-        <a href="{{ url_for('crear_curso') }}" class="btn btn-outline-primary w-100 py-3">📚 Crear Nuevo Curso</a>
-    </div>
-</div>
-
-<div class="d-flex justify-content-between align-items-center mt-5 mb-3">
-    <h4 class="mb-0">Cursos Disponibles (Inscripción)</h4>
-    <form method="GET" action="{{ url_for('admin_dashboard') }}" class="d-flex">
-        <input type="text" name="q_course" value="{{ q_course }}" class="form-control me-2" placeholder="Buscar curso...">
-        <button type="submit" class="btn btn-primary"><i class="bi bi-search"></i></button>
-        {% if q_course %}
-        <a href="{{ url_for('admin_dashboard') }}" class="btn btn-secondary ms-1"><i class="bi bi-x-lg"></i></a>
-        {% endif %}
-    </form>
-</div>
-
-<div class="table-responsive">
-    <table class="table table-hover table-bordered align-middle">
-        <thead class="table-dark">
-            <tr>
-                <th>Código</th>
-                <th>Nombre</th>
-                <th>Inscritos</th>
-                <th>Acción</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for c in courses_pagination.items %}
-            <tr>
-                <td>{{ c.id }}</td>
-                <td>{{ c.nombre }}</td>
-                <td><span class="badge bg-warning text-dark">{{ c.enrollments|length }} Estudiantes</span></td>
-                <td>
-                    <a href="{{ url_for('inscribir_estudiante', cid=c.id) }}" class="btn btn-sm btn-primary">Matricular
-                        Alumnos</a>
-                </td>
-            </tr>
-            {% else %}
-            <tr>
-                <td colspan="4" class="text-center text-muted py-4">No se encontraron cursos activos.</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</div>
-
-<!-- Paginación de cursos -->
-{% if courses_pagination.pages > 1 %}
-<nav class="mt-3">
-    <ul class="pagination justify-content-center">
-        <li class="page-item {% if not courses_pagination.has_prev %}disabled{% endif %}">
-            <a class="page-link" href="{{ url_for('admin_dashboard', page_course=courses_pagination.prev_num, q_course=q_course) }}">Anterior</a>
-        </li>
-        {% for page_num in courses_pagination.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
-            {% if page_num %}
-                <li class="page-item {% if page_num == courses_pagination.page %}active{% endif %}">
-                    <a class="page-link" href="{{ url_for('admin_dashboard', page_course=page_num, q_course=q_course) }}">{{ page_num }}</a>
-                </li>
-            {% else %}
-                <li class="page-item disabled"><span class="page-link">...</span></li>
+<div class="row g-4 mb-4">
+    <!-- Centro de Alertas -->
+    <div class="col-lg-7">
+        <h5 class="fw-bold text-dark mb-3"><i class="bi bi-card-checklist text-muted me-2"></i> Estado de Matrículas</h5>
+        
+        <div class="d-flex flex-column gap-3">
+            {% if cursos_sin_estudiantes %}
+            <div class="alert alert-warning border-0 shadow-sm d-flex gap-3 align-items-start">
+                <i class="bi bi-exclamation-triangle-fill fs-4 text-warning mt-1"></i>
+                <div class="flex-grow-1">
+                    <h6 class="fw-bold text-dark mb-1">Cursos sin Listado</h6>
+                    <p class="text-dark small mb-2">Se detectaron <strong>{{ cursos_sin_estudiantes|length }}</strong> cursos sin estudiantes inscritos.</p>
+                    <a href="{{ url_for('admin_construccion') }}" class="btn btn-sm btn-warning fw-bold px-3">Ir a Matricular</a>
+                </div>
+            </div>
             {% endif %}
-        {% endfor %}
-        <li class="page-item {% if not courses_pagination.has_next %}disabled{% endif %}">
-            <a class="page-link" href="{{ url_for('admin_dashboard', page_course=courses_pagination.next_num, q_course=q_course) }}">Siguiente</a>
-        </li>
-    </ul>
-</nav>
-{% endif %}
+            
+            {% if estudiantes_sin_cursos %}
+            <div class="alert alert-danger border-0 shadow-sm d-flex gap-3 align-items-start">
+                <i class="bi bi-person-x-fill fs-4 text-danger mt-1"></i>
+                <div class="flex-grow-1">
+                    <h6 class="fw-bold text-dark mb-1">Estudiantes Inactivos</h6>
+                    <p class="text-dark small mb-2">Existen <strong>{{ estudiantes_sin_cursos|length }}</strong> estudiantes que no tienen carga académica asignada.</p>
+                    <a href="{{ url_for('admin_construccion') }}" class="btn btn-sm btn-danger fw-bold px-3">Inscribir Alumnos</a>
+                </div>
+            </div>
+            {% endif %}
 
-<hr class="my-5">
-
-<div class="row text-center mb-5">
-    <div class="col-12">
-        <a href="{{ url_for('admin_lista_usuarios') }}" class="btn btn-primary btn-lg px-5 rounded-pill shadow-sm">
-            <i class="bi bi-people-fill me-2"></i> Ver Todos los Usuarios
-        </a>
+            {% if not cursos_sin_estudiantes and not estudiantes_sin_cursos %}
+            <div class="card bg-success bg-opacity-10 border-0 shadow-none">
+                <div class="card-body p-4 text-center d-flex flex-column align-items-center">
+                    <i class="bi bi-check-circle-fill text-success fs-1 mb-2"></i>
+                    <h6 class="fw-bold text-dark mb-1">Ecosistema Completo</h6>
+                    <p class="text-muted small mb-0">No se detectan faltas de matriculación en los cursos activos.</p>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Operaciones Rápidas -->
+    <div class="col-lg-5">
+        <h5 class="fw-bold text-dark mb-3"><i class="bi bi-lightning text-muted me-2"></i> Accesos Rápidos</h5>
+        
+        <div class="d-flex flex-column gap-3">
+            <a href="{{ url_for('registro') }}" class="card text-decoration-none hover-card border-0">
+                <div class="card-body p-3 d-flex align-items-center gap-3">
+                    <div class="bg-primary bg-opacity-10 rounded p-2 text-primary">
+                        <i class="bi bi-person-plus-fill fs-4"></i>
+                    </div>
+                    <div>
+                        <h6 class="fw-bold text-dark mb-1">Nuevo Usuario</h6>
+                        <p class="text-muted small mb-0">Registrar en secretaría</p>
+                    </div>
+                    <i class="bi bi-chevron-right text-muted ms-auto"></i>
+                </div>
+            </a>
+            
+            <a href="{{ url_for('crear_curso') }}" class="card text-decoration-none hover-card border-0">
+                <div class="card-body p-3 d-flex align-items-center gap-3">
+                    <div class="bg-success bg-opacity-10 rounded p-2 text-success">
+                        <i class="bi bi-journal-plus fs-4"></i>
+                    </div>
+                    <div>
+                        <h6 class="fw-bold text-dark mb-1">Nuevo Curso</h6>
+                        <p class="text-muted small mb-0">Aperturar asignatura</p>
+                    </div>
+                    <i class="bi bi-chevron-right text-muted ms-auto"></i>
+                </div>
+            </a>
+        </div>
     </div>
 </div>
-
 {% endblock %}

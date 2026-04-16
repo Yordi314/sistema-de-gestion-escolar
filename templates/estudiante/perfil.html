@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row align-items-center mb-4">
+    <div class="col-12">
+        <h2 class="fw-bold text-dark"><i class="bi bi-person text-primary"></i> Perfil del Estudiante</h2>
+        <p class="text-muted">Información administrativa de tu matrícula.</p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6 mx-auto">
+        <div class="card shadow-sm border-0 rounded-4 text-center p-4">
+            <div class="card-body">
+                <i class="bi bi-person-bounding-box display-1 text-primary opacity-75 mb-3"></i>
+                <h3 class="fw-bold text-dark mt-2">{{ estudiante.nombre }}</h3>
+                <p class="text-muted mb-0">Colegio San Ignacio</p>
+                
+                <hr class="text-secondary my-4">
+                
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <span class="text-muted fw-bold">ID / Matrícula:</span>
+                    <span class="badge bg-light text-dark border fs-6 px-3 py-2 rounded-pill">{{ estudiante.id }}</span>
+                </div>
+                
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <span class="text-muted fw-bold">Rol:</span>
+                    <span class="badge bg-info text-dark shadow-sm fs-6 px-3 rounded-pill">{{ estudiante.rol }}</span>
+                </div>
+                
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="text-muted fw-bold">Materias Inscritas:</span>
+                    <span class="badge bg-primary shadow-sm fs-6 px-3 rounded-pill">{{ estudiante.enrollments|length }} Asignaturas</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

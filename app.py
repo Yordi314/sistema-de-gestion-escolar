@@ -13,7 +13,7 @@ db.init_app(app)
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'index'
-login_manager.login_message = "Acceso Denegado. Por favor inicie sesión."
+login_manager.login_message = "¡Acceso denegado! Por favor, inicie sesión."
 login_manager.login_message_category = "danger"
 
 @login_manager.user_loader
@@ -77,21 +77,22 @@ def index():
             return redirect(url_for('estudiante_dashboard'))
             
     if request.method == "POST":
-        uid = request.form.get("uid")
+        uid = request.form.get("uid").strip().upper()
         password = request.form.get("password")
         user = User.query.get(uid)
         
         if user and user.check_password(password):
             login_user(user)
-            flash(f"Bienvenido {user.nombre}!", "success")
+            flash(f"¡Bienvenido, {user.nombre}!", "success")
             if user.rol == 'ADMIN':
                 return redirect(url_for('admin_dashboard'))
             elif user.rol == 'PROFESOR':
-                return redirect(url_for('profesor_vista_cursos', prof_id=current_user.id))
+                return redirect(url_for('profesor_vista_cursos', prof_id=user.id))
             elif user.rol == 'ESTUDIANTE':
                 return redirect(url_for('estudiante_dashboard'))
         else:
-            flash("Credenciales inválidas", "danger")
+            flash("¡Credenciales inválidas!", "danger")
+            return redirect(url_for('index'))
             
     return render_template("index.html")
 
@@ -99,36 +100,41 @@ def index():
 @login_required
 def logout():
     logout_user()
-    flash("Sesión cerrada.", "success")
+    flash("¡Sesión cerrada con éxito!", "success")
     return redirect(url_for('index'))
 
 @app.route("/admin/dashboard")
 @login_required
 def admin_dashboard():
     if not current_user.is_admin():
-        flash("Acceso Denegado.", "danger")
+        flash("¡Acceso denegado!", "danger")
         return redirect(url_for('index'))
         
-    users = User.query.all()
+    total_students = User.query.filter_by(rol='ESTUDIANTE').count()
+    total_professors = User.query.filter_by(rol='PROFESOR').count()
+    total_courses = Course.query.count()
     
-    q_course = request.args.get("q_course", "")
-    page_course = request.args.get("page_course", 1, type=int)
-    course_query = Course.query
-    if q_course:
-        search = f"%{q_course}%"
-        course_query = course_query.filter(db.or_(
-            Course.nombre.ilike(search),
-            Course.id.ilike(search)
-        ))
-    courses_pagination = course_query.paginate(page=page_course, per_page=10, error_out=False)
+    # Alertas
+    estudiantes_sin_cursos = User.query.filter(User.rol == 'ESTUDIANTE', ~User.enrollments.any()).all()
+    cursos_sin_estudiantes = Course.query.filter(~Course.enrollments.any()).all()
     
-    return render_template("admin_dashboard.html", users=users, courses_pagination=courses_pagination, q_course=q_course)
+    # Dashboard metrics
+    metrics = {
+        'total_students': total_students,
+        'total_professors': total_professors,
+        'total_courses': total_courses,
+        'pending_requests': 0
+    }
+    
+    return render_template("admin_dashboard.html", metrics=metrics, 
+                           estudiantes_sin_cursos=estudiantes_sin_cursos, 
+                           cursos_sin_estudiantes=cursos_sin_estudiantes)
 
 @app.route("/admin/usuarios")
 @login_required
 def admin_lista_usuarios():
     if not current_user.is_admin():
-        flash("Acceso Denegado.", "danger")
+        flash("¡Acceso denegado!", "danger")
         return redirect(url_for('index'))
         
     q = request.args.get("q", "")
@@ -150,7 +156,7 @@ def admin_lista_usuarios():
 @login_required
 def registro():
     if not current_user.is_admin():
-        flash("Acceso Denegado.", "danger")
+        flash("¡Acceso denegado!", "danger")
         return redirect(url_for('index'))
         
     if request.method == "POST":
@@ -160,13 +166,13 @@ def registro():
         password = request.form.get("password") or "123456"
         
         if User.query.get(uid):
-            flash(f"Ya existe un usuario con el ID {uid}", "danger")
+            flash(f"¡Atención! Ya existe un usuario con el ID {uid}", "danger")
         else:
-            user = User(id=uid, nombre=nombre, rol=rol)
+            user = User(id=uid, nombre=nombre, rol=rol.upper() if rol else '')
             user.set_password(password)
             db.session.add(user)
             db.session.commit()
-            flash(f"Usuario {nombre} ({rol}) creado con éxito.", "success")
+            flash(f"¡Usuario {nombre} ({rol}) creado con éxito!", "success")
             return redirect(url_for('admin_dashboard'))
             
     return render_template("admin_forms/registro.html")
@@ -184,14 +190,14 @@ def crear_curso():
         prof_id = request.form.get("prof_id")
         
         if Course.query.get(cid):
-            flash(f"El curso {cid} ya existe.", "danger")
+            flash(f"¡El curso {cid} ya existe!", "danger")
         elif not User.query.get(prof_id) or User.query.get(prof_id).rol != 'PROFESOR':
-            flash("Profesor inválido.", "danger")
+            flash("¡El ID de profesor ingresado es inválido!", "danger")
         else:
             curso = Course(id=cid, nombre=nombre, profesor_id=prof_id)
             db.session.add(curso)
             db.session.commit()
-            flash(f"Curso {nombre} creado correctamente.", "success")
+            flash(f"¡Curso {nombre} creado correctamente!", "success")
             return redirect(url_for('admin_dashboard'))
             
     profesores = User.query.filter_by(rol='PROFESOR').all()
@@ -201,12 +207,12 @@ def crear_curso():
 @login_required
 def inscribir_estudiante(cid):
     if not current_user.is_admin():
-        flash("Acceso Denegado.", "danger")
+        flash("¡Acceso denegado!", "danger")
         return redirect(url_for('index'))
         
     curso = Course.query.get(cid)
     if not curso:
-        flash("Curso no encontrado.", "danger")
+        flash("¡El curso solicitado no fue encontrado!", "danger")
         return redirect(url_for('admin_dashboard'))
         
     if request.method == "POST":
@@ -220,7 +226,7 @@ def inscribir_estudiante(cid):
         
         if exitos > 0:
             db.session.commit()
-            flash(f"{exitos} estudiante(s) inscrito(s) correctamente.", "success")
+            flash(f"¡{exitos} estudiante(s) inscrito(s) correctamente!", "success")
         return redirect(url_for('admin_dashboard'))
         
     subquery = db.session.query(Enrollment.student_id).filter_by(course_id=cid)
@@ -232,7 +238,7 @@ def inscribir_estudiante(cid):
 @login_required
 def profesor_vista_cursos(prof_id):
     if current_user.rol != 'PROFESOR' or current_user.id != prof_id:
-        flash("Acceso denegado.", "danger")
+        flash("¡Acceso denegado!", "danger")
         return redirect(url_for('index'))
         
     q = request.args.get("q", "")
@@ -248,6 +254,11 @@ def profesor_vista_cursos(prof_id):
         
     cursos_pagination = query.paginate(page=page, per_page=10, error_out=False)
     
+    actividad_reciente = Enrollment.query.join(Course).filter(
+        Course.profesor_id == prof_id, 
+        Enrollment.grade != None
+    ).order_by(Enrollment.fecha_calificacion.desc()).limit(5).all()
+    
     if request.method == "POST":
         cid = request.form.get("course_id")
         sid = request.form.get("student_id")
@@ -258,6 +269,8 @@ def profesor_vista_cursos(prof_id):
             enroll = Enrollment.query.filter_by(student_id=sid, course_id=cid).first()
             if enroll and enroll.course.profesor_id == prof_id:
                 enroll.grade = nota
+                from datetime import datetime
+                enroll.fecha_calificacion = datetime.utcnow()
                 db.session.commit()
                 flash("Calificación guardada.", "success")
             else:
@@ -270,7 +283,7 @@ def profesor_vista_cursos(prof_id):
     def get_student(sid):
         return User.query.get(sid)
         
-    return render_template("profesor/dashboard.html", profesor=current_user, cursos_pagination=cursos_pagination, get_student=get_student, q=q)
+    return render_template("profesor/dashboard.html", profesor=current_user, cursos_pagination=cursos_pagination, actividad_reciente=actividad_reciente, get_student=get_student, q=q)
 
 @app.route("/estudiante/dashboard")
 @login_required
@@ -279,20 +292,75 @@ def estudiante_dashboard():
         flash("Acceso denegado.", "danger")
         return redirect(url_for('index'))
         
+    enrollments = current_user.enrollments
+    cursos_evaluados = [e for e in enrollments if e.grade is not None]
+    gpa = sum([e.grade for e in cursos_evaluados]) / len(cursos_evaluados) if cursos_evaluados else 0.0
+    
     reporte = {
         "estudiante": current_user.nombre,
         "id": current_user.id,
+        "gpa": round(gpa, 2),
         "cursos": []
     }
     
-    for enroll in current_user.enrollments:
+    for enroll in enrollments:
+        estado = "Evaluado" if enroll.grade is not None else "Pendiente"
         reporte["cursos"].append({
             "curso_id": enroll.course.id,
             "curso_nombre": enroll.course.nombre,
-            "calificacion": enroll.grade if enroll.grade is not None else "N/A"
+            "calificacion": enroll.grade if enroll.grade is not None else "N/A",
+            "estado": estado
         })
         
-    return render_template("estudiante/reporte.html", reporte=reporte)
+    return render_template("estudiante/dashboard.html", reporte=reporte)
+
+# --- Rutas Adicionales y "En Construcción" ---
+@app.route("/admin/mantenimiento")
+@login_required
+def admin_construccion():
+    if not current_user.is_admin():
+        flash("¡Acceso denegado!", "danger")
+        return redirect(url_for('index'))
+    return render_template("admin_construccion.html", titulo="Módulo en Construcción")
+
+@app.route("/profesor/<prof_id>/alumnos")
+@login_required
+def profesor_alumnos(prof_id):
+    if current_user.rol != 'PROFESOR' or current_user.id != prof_id:
+        flash("¡Acceso denegado!", "danger")
+        return redirect(url_for('index'))
+    
+    # Obtener el conjunto único de alumnos usando join
+    alumnos_unicos = db.session.query(User).join(Enrollment, User.id == Enrollment.student_id)\
+                        .join(Course, Course.id == Enrollment.course_id)\
+                        .filter(Course.profesor_id == prof_id).distinct().all()
+                        
+    return render_template("profesor/alumnos.html", alumnos=alumnos_unicos)
+
+@app.route("/profesor/<prof_id>/perfil")
+@login_required
+def profesor_perfil(prof_id):
+    if current_user.rol != 'PROFESOR' or current_user.id != prof_id:
+        flash("¡Acceso denegado!", "danger")
+        return redirect(url_for('index'))
+    return render_template("profesor/perfil.html", profesor=current_user)
+
+@app.route("/estudiante/horario")
+@login_required
+def estudiante_horario():
+    if current_user.rol != 'ESTUDIANTE':
+        flash("¡Acceso denegado!", "danger")
+        return redirect(url_for('index'))
+    return render_template("estudiante/horario.html", estudiante=current_user)
+
+@app.route("/estudiante/perfil")
+@login_required
+def estudiante_perfil():
+    if current_user.rol != 'ESTUDIANTE':
+        flash("¡Acceso denegado!", "danger")
+        return redirect(url_for('index'))
+    return render_template("estudiante/perfil.html", estudiante=current_user)
+
 
 with app.app_context():
     seed_db()

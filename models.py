@@ -2,15 +2,18 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 
+from datetime import datetime
+
 db = SQLAlchemy()
 
 # Tabla Asociativa para la relación Muchos a Muchos entre User (Estudiante) y Course
-# Incluye la calificación (nota)
+# Incluye la calificación (nota) y fecha de calificación
 class Enrollment(db.Model):
     __tablename__ = 'enrollments'
     student_id = db.Column(db.String, db.ForeignKey('users.id'), primary_key=True)
     course_id = db.Column(db.String, db.ForeignKey('courses.id'), primary_key=True)
     grade = db.Column(db.Float, nullable=True) # Calificación
+    fecha_calificacion = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow) # Fecha de la última calificación
     
     # Relaciones
     student = db.relationship("User", back_populates="enrollments")

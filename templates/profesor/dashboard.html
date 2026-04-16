@@ -1,104 +1,153 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="row align-items-center mt-3 mb-4">
-    <div class="col-12">
-        <h2>👨‍🏫 Panel de Profesor: {{ profesor.nombre }}</h2>
-        <p class="text-muted">Cédula: {{ profesor.id }}</p>
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-5">
+    <div>
+        <h2 class="fw-bold text-dark mb-1" style="letter-spacing: -0.05em;">Hola, Profesora/o</h2>
+        <p class="text-muted mb-0">Esta es tu mesa de trabajo pedagógico.</p>
     </div>
 </div>
 
-<!-- Barra de búsqueda de cursos -->
-<div class="row mb-4">
-    <div class="col-12">
-        <form method="GET" action="{{ url_for('profesor_vista_cursos', prof_id=profesor.id) }}" class="input-group input-group-lg shadow-sm">
-            <input type="text" name="q" value="{{ q }}" class="form-control ps-3" placeholder="Buscar curso por nombre o ID...">
-            <button class="btn btn-primary px-4" type="submit"><i class="bi bi-search"></i> Buscar</button>
-            {% if q %}
-            <a href="{{ url_for('profesor_vista_cursos', prof_id=profesor.id) }}" class="btn btn-secondary px-3"><i class="bi bi-x-lg"></i></a>
-            {% endif %}
-        </form>
-    </div>
-</div>
-
-{% if not cursos_pagination.items %}
-<div class="alert alert-warning text-dark">No se encontraron cursos activos con los criterios de búsqueda.</div>
-{% else %}
-    {% for curso in cursos_pagination.items %}
-    <div class="card shadow-sm mb-4">
-        <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
-            <h5 class="mb-0">{{ curso.nombre }}</h5>
-            <small>Código: {{ curso.id }}</small>
+<div class="row g-5">
+    <!-- Cursos Asignados -->
+    <div class="col-lg-8">
+        <h5 class="fw-bold text-dark mb-4">Salones Virtuales</h5>
+        
+        <!-- Barra de Búsqueda Flotante -->
+        <div class="card p-2 mb-4 hover-card" style="border-radius: 99px;">
+            <form method="GET" action="{{ url_for('profesor_vista_cursos', prof_id=profesor.id) }}" class="d-flex align-items-center w-100 m-0">
+                <i class="bi bi-search text-muted ms-3 me-2"></i>
+                <input type="text" name="q" value="{{ q }}" class="form-control border-0 shadow-none bg-transparent" placeholder="Buscar ID de curso o alumno...">
+                {% if q %}
+                <a href="{{ url_for('profesor_vista_cursos', prof_id=profesor.id) }}" class="text-muted me-3 text-decoration-none"><i class="bi bi-x-circle-fill"></i></a>
+                {% endif %}
+                <button class="btn btn-primary px-4 ms-2" type="submit" style="min-width: 120px;">Filtrar</button>
+            </form>
         </div>
-        <div class="card-body">
-            {% if not curso.enrollments %}
-            <p class="text-muted mb-0">No hay estudiantes inscritos en este curso todavía.</p>
-            {% else %}
-            <div class="table-responsive">
-                <table class="table table-hover align-middle">
-                    <thead class="table-light">
-                        <tr>
-                            <th>Cédula</th>
-                            <th>Nombre del Estudiante</th>
-                            <th>Calificación Actual</th>
-                            <th>Actualizar Nota (0-100)</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for enroll in curso.enrollments %}
-                        <tr>
-                            <td>{{ enroll.student.id }}</td>
-                            <td>{{ enroll.student.nombre }}</td>
-                            <td>
-                                {% if enroll.grade is none %}
-                                <span class="badge bg-warning text-dark">Sin Calificar</span>
-                                {% else %}
-                                <span class="badge bg-success">{{ enroll.grade }} pts</span>
-                                {% endif %}
-                            </td>
-                            <td>
-                                <form method="POST" action="{{ url_for('profesor_vista_cursos', prof_id=profesor.id, q=q, page=cursos_pagination.page) }}"
-                                    class="d-flex align-items-center gap-2">
-                                    <input type="hidden" name="course_id" value="{{ curso.id }}">
-                                    <input type="hidden" name="student_id" value="{{ enroll.student.id }}">
-                                    <input type="number" name="nota" class="form-control form-control-sm"
-                                        style="width: 90px;" min="0" max="100" step="0.1" value="{{ enroll.grade if enroll.grade is not none else '' }}"
-                                        required>
-                                    <button type="submit" class="btn btn-sm btn-primary">Guardar</button>
-                                </form>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+
+        {% if not cursos_pagination.items %}
+        <div class="card border border-2 border-dashed bg-transparent shadow-none text-center p-5">
+            <i class="bi bi-archive text-warning fs-1 mb-3 d-inline-block"></i>
+            <h6 class="fw-bold text-dark">Carpeta Vacía</h6>
+            <p class="text-muted small mb-0">No se encontraron cursos asignados o la búsqueda no arrojó resultados.</p>
+        </div>
+        {% else %}
+            <div class="accordion accordion-flush shadow-sm fade-in-section rounded-top rounded-bottom overflow-hidden border border-light" id="accordionCursos">
+            {% for curso in cursos_pagination.items %}
+                <div class="accordion-item border-bottom">
+                    <h2 class="accordion-header" id="heading{{ loop.index }}">
+                        <button class="accordion-button collapsed px-4 py-4" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ loop.index }}" aria-expanded="false" aria-controls="collapse{{ loop.index }}">
+                            <div class="d-flex w-100 justify-content-between align-items-center pe-3">
+                                <div class="d-flex align-items-center gap-3">
+                                    <i class="bi bi-journal-medical text-primary fs-4"></i>
+                                    <div>
+                                        <h6 class="fw-bold text-dark mb-0 d-block">{{ curso.nombre }}</h6>
+                                        <small class="text-muted text-uppercase" style="font-size: 0.70rem;">{{ curso.id }}</small>
+                                    </div>
+                                </div>
+                                <span class="badge bg-light text-dark border rounded-pill px-3 py-1 scale-up">
+                                    <i class="bi bi-people-fill me-1"></i> {{ curso.enrollments|length }}
+                                </span>
+                            </div>
+                        </button>
+                    </h2>
+                    
+                    <div id="collapse{{ loop.index }}" class="accordion-collapse collapse" aria-labelledby="heading{{ loop.index }}" data-bs-parent="#accordionCursos">
+                        <div class="accordion-body bg-light p-4">
+                            {% if not curso.enrollments %}
+                            <div class="text-center p-3 text-muted small">
+                                Sin estudiantes asignados.
+                            </div>
+                            {% else %}
+                            <div class="d-flex flex-column gap-2 mb-2">
+                                {% for enroll in curso.enrollments %}
+                                <div class="bg-white p-3 rounded-3 shadow-none border d-flex flex-column flex-md-row justify-content-between align-items-md-center transition-all hover-card">
+                                    <div class="d-flex align-items-center gap-3 mb-3 mb-md-0">
+                                        <div class="bg-light p-2 rounded-circle text-muted">
+                                            <i class="bi bi-person fs-5"></i>
+                                        </div>
+                                        <div>
+                                            <h6 class="fw-bold text-dark mb-0" style="font-size: 0.9rem;">{{ enroll.student.nombre }}</h6>
+                                            <small class="text-muted" style="font-size: 0.75rem;">{{ enroll.student.id }}</small>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="d-flex align-items-center gap-2">
+                                        {% if enroll.grade is none %}
+                                            <span class="text-warning small fw-bold me-2"><i class="bi bi-clock-history"></i> Pendiente</span>
+                                        {% else %}
+                                            <span class="text-success small fw-bold me-2"><i class="bi bi-check2"></i> Evaluado</span>
+                                        {% endif %}
+                                        
+                                        <form method="POST" action="{{ url_for('profesor_vista_cursos', prof_id=profesor.id, q=q, page=cursos_pagination.page) }}" class="m-0">
+                                            <input type="hidden" name="course_id" value="{{ curso.id }}">
+                                            <input type="hidden" name="student_id" value="{{ enroll.student.id }}">
+                                            <div class="input-group input-group-sm" style="width: 130px;">
+                                                <input type="number" name="nota" class="form-control text-center"
+                                                    min="0" max="100" step="0.1" value="{{ enroll.grade if enroll.grade is not none else '' }}"
+                                                    placeholder="Nota">
+                                                <button type="submit" class="btn btn-primary" title="Guardar"><i class="bi bi-check-lg fw-bold"></i></button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+            </div>
+            
+            {% if cursos_pagination.pages > 1 %}
+            <div class="d-flex justify-content-center mt-5">
+                <nav>
+                    <ul class="pagination gap-1">
+                        <li class="page-item {% if not cursos_pagination.has_prev %}disabled{% endif %}">
+                            <a class="page-link shadow-sm border" href="{{ url_for('profesor_vista_cursos', prof_id=profesor.id, page=cursos_pagination.prev_num, q=q) }}">Atrás</a>
+                        </li>
+                        <li class="page-item {% if not cursos_pagination.has_next %}disabled{% endif %}">
+                            <a class="page-link shadow-sm border" href="{{ url_for('profesor_vista_cursos', prof_id=profesor.id, page=cursos_pagination.next_num, q=q) }}">Siguiente</a>
+                        </li>
+                    </ul>
+                </nav>
             </div>
             {% endif %}
+        {% endif %}
+    </div>
+
+    <!-- Actividad Vertical -->
+    <div class="col-lg-4">
+        <h5 class="fw-bold text-dark mb-4">Feed de Calificaciones</h5>
+        
+        <div class="d-flex flex-column gap-3 position-relative">
+            <!-- Timeline Line -->
+            <div class="position-absolute h-100 border-start ms-4" style="z-index: 0; left: 8px;"></div>
+
+            {% if actividad_reciente %}
+                {% for act in actividad_reciente %}
+                <div class="d-flex align-items-start gap-3 position-relative" style="z-index: 1;">
+                    <div class="bg-success text-white p-2 rounded-circle shadow-sm mt-1 border border-3 border-white d-flex align-items-center justify-content-center" style="width: 38px; height: 38px;">
+                        <i class="bi bi-check2"></i>
+                    </div>
+                    <div class="card flex-grow-1 hover-card">
+                        <div class="card-body p-3">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <h6 class="fw-bold text-dark mb-0">{{ act.student.nombre }}</h6>
+                                <span class="fw-bold text-success fs-5">{{ act.grade }}</span>
+                            </div>
+                            <p class="text-muted small mb-0">{{ act.course.nombre }}</p>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="card bg-transparent shadow-none border border-dashed text-center p-4">
+                    <p class="text-muted small mb-0">No has registrado evaluaciones.</p>
+                </div>
+            {% endif %}
         </div>
     </div>
-    {% endfor %}
-    
-    <!-- Paginación de cursos -->
-    {% if cursos_pagination.pages > 1 %}
-    <nav class="mt-4 d-flex justify-content-center">
-        <ul class="pagination pagination-md shadow-sm">
-            <li class="page-item {% if not cursos_pagination.has_prev %}disabled{% endif %}">
-                <a class="page-link" href="{{ url_for('profesor_vista_cursos', prof_id=profesor.id, page=cursos_pagination.prev_num, q=q) }}">Anterior</a>
-            </li>
-            {% for page_num in cursos_pagination.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
-                {% if page_num %}
-                    <li class="page-item {% if page_num == cursos_pagination.page %}active{% endif %}">
-                        <a class="page-link" href="{{ url_for('profesor_vista_cursos', prof_id=profesor.id, page=page_num, q=q) }}">{{ page_num }}</a>
-                    </li>
-                {% else %}
-                    <li class="page-item disabled"><span class="page-link">...</span></li>
-                {% endif %}
-            {% endfor %}
-            <li class="page-item {% if not cursos_pagination.has_next %}disabled{% endif %}">
-                <a class="page-link" href="{{ url_for('profesor_vista_cursos', prof_id=profesor.id, page=cursos_pagination.next_num, q=q) }}">Siguiente</a>
-            </li>
-        </ul>
-    </nav>
-    {% endif %}
-
-{% endif %}
+</div>
 {% endblock %}

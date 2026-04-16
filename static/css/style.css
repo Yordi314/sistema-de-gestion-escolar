@@ -1,122 +1,144 @@
+/* Estilos Educativos Limpios */
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
 :root {
-    /* Primary / Azul Institucional */
-    --bs-primary: #223A70;
-    --bs-primary-rgb: 34, 58, 112;
+    /* Mantenemos paleta institucional con buen contraste */
+    --bs-primary: #1E3A8A; 
+    --bs-primary-rgb: 30, 58, 138;
+    
+    --bs-info: #3B82F6;
+    --bs-success: #10B981;
+    --bs-warning: #F59E0B;
+    --bs-danger: #EF4444;
 
-    /* Warning / Accent / Dorado Académico */
-    --bs-warning: #FFC72C;
-    --bs-warning-rgb: 255, 199, 44;
+    /* Backgrounds Limpios (No Corporativos Fríos) */
+    --surface-bg: #F4F6F9; 
+    --surface-card: #FFFFFF;
+    
+    /* Typography */
+    --bs-body-font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    --text-main: #1E293B;  
+    --text-muted-custom: #64748B;  
 
-    /* Danger / Rojo Carmesí */
-    --bs-danger: #BA0C2F;
-    --bs-danger-rgb: 186, 12, 47;
-
-    /* Light / Gris Claro */
-    --bs-light: #F4F5F7;
-    --bs-light-rgb: 244, 245, 247;
-
-    /* Dark / Gris Carbón */
-    --bs-dark: #2C3136;
-    --bs-dark-rgb: 44, 49, 54;
-
-    /* Body Adjustments */
-    --bs-body-bg: #F4F5F7;
-    --bs-body-bg-rgb: 244, 245, 247;
-    --bs-body-color: #2C3136;
-    --bs-body-color-rgb: 44, 49, 54;
+    /* Sombras Conservadoras y Elegantes */
+    --shadow-float: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    --shadow-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.04);
 }
 
-/* Base resets & utilities overrides */
+/* Base Overrides */
 body {
-    background-color: var(--bs-body-bg) !important;
-    color: var(--bs-body-color) !important;
+    background-color: var(--surface-bg) !important;
+    color: var(--text-main) !important;
+    font-family: var(--bs-body-font-family) !important;
+    letter-spacing: -0.015em;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
-.text-dark {
-    color: var(--bs-dark) !important;
+h1, h2, h3, h4, h5, h6 {
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--text-main);
 }
 
-.bg-light {
-    background-color: var(--bs-light) !important;
+.text-muted {
+    color: var(--text-muted-custom) !important;
 }
 
-.bg-white {
-    background-color: #FFFFFF !important;
+/* Tarjetas (Bordes convencionales, sin Glassmorphism) */
+.card {
+    border: 1px solid rgba(0,0,0,0.05) !important;
+    border-radius: 12px !important;
+    background: var(--surface-card);
+    transition: all 0.3s ease;
+    box-shadow: var(--shadow-float) !important;
 }
 
-.bg-primary {
-    background-color: var(--bs-primary) !important;
+.hover-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-hover) !important;
 }
 
-.text-primary {
-    color: var(--bs-primary) !important;
+/* Botones (Sólidos, sin mallas de gradiente molestas) */
+.btn {
+    font-weight: 600;
+    padding: 0.60rem 1.4rem;
+    border-radius: 8px !important; 
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
 }
 
-.border-primary {
-    border-color: var(--bs-primary) !important;
-}
-
-.bg-warning {
-    background-color: var(--bs-warning) !important;
-}
-
-.text-warning {
-    color: var(--bs-warning) !important;
-}
-
-.bg-danger {
-    background-color: var(--bs-danger) !important;
-}
-
-.text-danger {
-    color: var(--bs-danger) !important;
-}
-
-.bg-dark {
-    background-color: var(--bs-dark) !important;
-}
-
-/* Button variants customization */
 .btn-primary {
-    --bs-btn-bg: #223A70;
-    --bs-btn-border-color: #223A70;
-    --bs-btn-hover-bg: #1c305d;
-    --bs-btn-hover-border-color: #1a2c55;
-    --bs-btn-active-bg: #1a2c55;
-    --bs-btn-active-border-color: #18284e;
+    background-color: var(--bs-primary);
+    color: #fff;
 }
 
-.btn-outline-primary {
-    --bs-btn-color: #223A70;
-    --bs-btn-border-color: #223A70;
-    --bs-btn-hover-bg: #223A70;
-    --bs-btn-hover-border-color: #223A70;
-    --bs-btn-hover-color: #ffffff;
-    --bs-btn-active-bg: #223A70;
-    --bs-btn-active-border-color: #223A70;
+.btn-primary:hover {
+    background-color: #172D6E;
+    transform: translateY(-1px);
 }
 
-.btn-warning {
-    --bs-btn-color: #000;
-    --bs-btn-bg: #FFC72C;
-    --bs-btn-border-color: #FFC72C;
-    --bs-btn-hover-bg: #e6b328;
-    --bs-btn-hover-border-color: #d9a925;
-    --bs-btn-active-bg: #d9a925;
-    --bs-btn-active-border-color: #cc9f23;
+/* Formularios */
+.form-control, .form-select {
+    border: 1px solid #E2E8F0 !important;
+    border-radius: 8px;
+    padding: 0.70rem 1rem;
+    font-size: 0.95rem;
+    color: var(--text-main);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: none !important;
 }
 
-.btn-danger {
-    --bs-btn-bg: #BA0C2F;
-    --bs-btn-border-color: #BA0C2F;
-    --bs-btn-hover-bg: #a70b2a;
-    --bs-btn-hover-border-color: #950a26;
-    --bs-btn-active-bg: #950a26;
-    --bs-btn-active-border-color: #820821;
+.form-control:focus, .form-select:focus {
+    background-color: #FFFFFF;
+    border-color: #93C5FD !important;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important;
 }
 
-/* Specific elements adjustments */
-hr.text-secondary {
-    border-color: var(--bs-primary) !important;
-    opacity: 0.2;
+/* Sidebar Custom Styling (No flotante forzado) */
+.sidebar-link {
+    color: var(--text-muted-custom);
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    transition: all 0.2s ease;
+    background-color: transparent;
+    text-decoration: none;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+}
+
+.sidebar-link i {
+    transition: transform 0.2s ease;
+    color: #94A3B8;
+}
+
+.sidebar-link:hover {
+    background-color: #F1F5F9;
+    color: var(--bs-primary);
+}
+
+.sidebar-link.active {
+    background-color: #EFF6FF;
+    color: var(--bs-primary);
+    border-left: 3px solid var(--bs-primary);
+    border-radius: 0 8px 8px 0;
+}
+
+.sidebar-link.active i, .sidebar-link:hover i {
+    color: var(--bs-primary);
+}
+
+/* Animations simples */
+.fade-in-section {
+    animation: smoothFadeIn 0.4s ease forwards;
+}
+
+@keyframes smoothFadeIn {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
 }

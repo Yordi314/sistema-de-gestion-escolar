@@ -1,40 +1,54 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="row justify-content-center mt-4">
-    <div class="col-md-6">
-        <div class="card shadow-sm">
-            <div class="card-header bg-primary text-white">
-                <h4 class="mb-0">📚 Crear Nuevo Curso</h4>
-            </div>
-            <div class="card-body">
+<div class="row align-items-center mb-4">
+    <div class="col-md-8">
+        <h2 class="fw-bold text-dark"><i class="bi bi-journal-plus text-success"></i> Apertura de Curso</h2>
+        <p class="text-muted mb-0">Registre una nueva asignatura académica y asígnele un docente titular</p>
+    </div>
+    <div class="col-md-4 text-md-end mt-3 mt-md-0">
+        <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline-secondary rounded-pill px-4">
+            <i class="bi bi-arrow-left me-2"></i> Cancelar
+        </a>
+    </div>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <div class="card bg-white shadow-sm border-0 border-start border-success border-4 rounded-4 overflow-hidden fade-in-section">
+            <div class="card-body p-5">
                 <form method="POST" action="{{ url_for('crear_curso') }}">
-                    <div class="mb-3">
-                        <label class="form-label">Código del Curso</label>
-                        <input type="text" name="cid" class="form-control" required placeholder="Ej: MAT-101">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Nombre del Curso</label>
-                        <input type="text" name="nombre" class="form-control" required placeholder="Álgebra Lineal">
-                    </div>
                     <div class="mb-4">
-                        <label class="form-label">Profesor Asignado</label>
-                        <select name="prof_id" class="form-select" required>
-                            <option value="" disabled selected>Seleccione un profesor impartidor...</option>
-                            {% for prof in profesores %}
-                            <option value="{{ prof.id }}">{{ prof.name }} ({{ prof.id }})</option>
+                        <label class="form-label text-muted fw-bold small text-uppercase" style="letter-spacing: 0.05em;">Código del Curso</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light border-0 text-success px-3 rounded-start"><i class="bi bi-upc-scan fs-5"></i></span>
+                            <input type="text" name="cid" class="form-control form-control-lg bg-light border-0 rounded-end shadow-none" required placeholder="Ej: CUR-05">
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="form-label text-muted fw-bold small text-uppercase" style="letter-spacing: 0.05em;">Nombre de la Asignatura</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light border-0 text-success px-3 rounded-start"><i class="bi bi-fonts fs-5"></i></span>
+                            <input type="text" name="nombre" class="form-control form-control-lg bg-light border-0 rounded-end shadow-none" required placeholder="Ej: Física Cuántica I">
+                        </div>
+                    </div>
+                    
+                    <div class="mb-5">
+                        <label class="form-label text-muted fw-bold small text-uppercase" style="letter-spacing: 0.05em;">Profesor Titular Asignado</label>
+                        <select name="prof_id" class="form-select form-select-lg bg-light border-0 shadow-none rounded-3" required>
+                            <option value="" disabled selected>Desplegar listado docente...</option>
+                            {% for profesor in profesores %}
+                            <option value="{{ profesor.id }}">{{ profesor.nombre }} ({{ profesor.id }})</option>
                             {% endfor %}
                         </select>
                         {% if not profesores %}
-                        <small class="text-danger">⚠️ Debe dar de alta al menos un Profesor antes de crear un
-                            curso.</small>
+                        <div class="form-text text-danger mt-2"><i class="bi bi-exclamation-circle me-1"></i> No hay profesores registrados.</div>
                         {% endif %}
                     </div>
-                    <div class="d-flex justify-content-between">
-                        <a href="{{ url_for('admin_dashboard') }}"
-                            class="btn btn-outline-warning text-dark">Cancelar</a>
-                        <button type="submit" class="btn btn-primary" {% if not profesores %}disabled{% endif %}>Crear
-                            Curso</button>
+                    
+                    <div class="d-grid mt-2">
+                        <button type="submit" class="btn btn-success btn-lg text-white rounded-pill shadow hover-card fw-bold" {% if not profesores %}disabled{% endif %}>Crear Materia</button>
                     </div>
                 </form>
             </div>

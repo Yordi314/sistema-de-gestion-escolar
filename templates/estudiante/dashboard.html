@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-5">
+    <div>
+        <h2 class="fw-bold text-dark mb-1" style="letter-spacing: -0.05em;">Progreso Académico</h2>
+        <p class="text-muted mb-0">Estudiante: <strong>{{ reporte.estudiante }}</strong> | Matrícula: <strong>{{ reporte.id }}</strong></p>
+    </div>
+    <div class="mt-4 mt-md-0">
+        <button onclick="window.print()" class="btn btn-outline-primary border-2 rounded-pill shadow-sm px-4 fw-bold gap-2 d-flex align-items-center">
+            <i class="bi bi-cloud-arrow-down-fill"></i> Descargar PDF
+        </button>
+    </div>
+</div>
+
+<div class="row g-5">
+    <!-- Indicador de Rendimiento -->
+    <div class="col-lg-4">
+        <div class="card bg-primary text-white overflow-hidden text-center hover-card" style="border-radius: 2rem;">
+            <!-- Mesh overlay -->
+            <div class="position-absolute top-0 start-0 w-100 h-100 opacity-25" style="background: radial-gradient(circle at top right, #93C5FD, transparent 60%); z-index: 1;"></div>
+            
+            <div class="card-body position-relative z-2 p-5 d-flex flex-column align-items-center">
+                <h6 class="text-white-50 fw-bold mb-4 text-uppercase" style="letter-spacing: 0.1em;">Promedio General Global</h6>
+                <div class="bg-white bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center p-4 mb-3 border border-white border-opacity-25" style="width: 140px; height: 140px;">
+                    <h1 class="display-2 fw-bold text-white mb-0">{{ reporte.gpa }}</h1>
+                </div>
+                <p class="text-white-50 mt-3 mb-0 small"><i class="bi bi-activity me-1"></i> Computado automáticamente</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Carga Académica -->
+    <div class="col-lg-8">
+        <h5 class="fw-bold text-dark mb-4">Carga Académica Semestral</h5>
+        
+        <div class="d-flex flex-column gap-3">
+            {% if not reporte.cursos %}
+            <div class="card border border-2 border-dashed bg-transparent shadow-none p-5 text-center">
+                <i class="bi bi-journal-x display-4 text-muted opacity-50 mb-3"></i>
+                <h6 class="fw-bold text-dark">Sin Asignaturas</h6>
+                <p class="text-muted small mb-0">Actualmente no cursas ninguna materia para este ciclo.</p>
+            </div>
+            {% else %}
+                {% for c in reporte.cursos %}
+                <div class="card hover-card">
+                    <div class="card-body p-4 d-flex flex-column flex-md-row justify-content-between align-items-md-center">
+                        <div class="d-flex align-items-center gap-4 mb-3 mb-md-0">
+                            {% if c.estado == 'Pendiente' %}
+                                <i class="bi bi-clock-history text-warning fs-3"></i>
+                            {% else %}
+                                <i class="bi bi-check2-all text-success fs-3"></i>
+                            {% endif %}
+                            
+                            <div>
+                                <h6 class="fw-bold text-dark mb-1">{{ c.curso_nombre }}</h6>
+                                <p class="text-muted small mb-0 font-monospace">Cod: {{ c.curso_id }}</p>
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex align-items-center gap-4 border-start ps-4 ms-md-auto">
+                            {% if c.estado == 'Pendiente' %}
+                                <div class="text-end">
+                                    <span class="text-muted text-uppercase fw-bold" style="font-size: 0.7rem; letter-spacing: 0.1em;">Estatus</span>
+                                    <h5 class="text-warning fw-bold mb-0">En Curso</h5>
+                                </div>
+                                <h3 class="fw-bold text-muted opacity-25 mb-0" style="min-width: 60px; text-align: right;">--</h3>
+                            {% else %}
+                                <div class="text-end">
+                                    <span class="text-muted text-uppercase fw-bold" style="font-size: 0.7rem; letter-spacing: 0.1em;">Calificativo</span>
+                                    <h5 class="{% if c.calificacion < 60 %}text-danger{% else %}text-success{% endif %} fw-bold mb-0">Definitiva</h5>
+                                </div>
+                                <h2 class="fw-bold text-dark mb-0" style="min-width: 60px; text-align: right;">{{ c.calificacion }}<span class="fs-6 text-muted">/100</span></h2>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

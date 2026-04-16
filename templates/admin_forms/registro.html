@@ -1,38 +1,58 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="row justify-content-center mt-4">
-    <div class="col-md-6">
-        <div class="card shadow-sm">
-            <div class="card-header bg-primary text-white">
-                <h4 class="mb-0">➕ Alta de Usuario</h4>
-            </div>
-            <div class="card-body">
+<div class="row align-items-center mb-4">
+    <div class="col-md-8">
+        <h2 class="fw-bold text-dark"><i class="bi bi-person-plus text-primary"></i> Apertura de Perfil</h2>
+        <p class="text-muted mb-0">Ingreso corporativo de nuevos integrantes a la institución</p>
+    </div>
+    <div class="col-md-4 text-md-end mt-3 mt-md-0">
+        <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline-secondary rounded-pill px-4">
+            <i class="bi bi-arrow-left me-2"></i> Cancelar
+        </a>
+    </div>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <div class="card bg-white shadow-sm border-0 rounded-4 overflow-hidden fade-in-section">
+            <div class="card-body p-5">
                 <form method="POST" action="{{ url_for('registro') }}">
-                    <div class="mb-3">
-                        <label class="form-label">Rol del Usuario</label>
-                        <select name="rol" class="form-select" required>
-                            <option value="" disabled selected>Seleccione...</option>
+                    <div class="mb-4">
+                        <label class="form-label text-muted fw-bold small text-uppercase" style="letter-spacing: 0.05em;">Rol del Usuario</label>
+                        <select name="rol" class="form-select form-select-lg bg-light border-0 shadow-none rounded-3" required>
+                            <option value="" disabled selected>Seleccione la categoría...</option>
                             <option value="Estudiante">Estudiante</option>
                             <option value="Profesor">Profesor</option>
                         </select>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label">Cédula / ID Único</label>
-                        <input type="text" name="uid" class="form-control" required placeholder="Ej: V-12345678">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Nombre Completo</label>
-                        <input type="text" name="nombre" class="form-control" required placeholder="Juan Pérez">
-                    </div>
+                    
                     <div class="mb-4">
-                        <label class="form-label">Contraseña</label>
-                        <input type="password" name="password" class="form-control" placeholder="Dejar en blanco para 123456">
+                        <label class="form-label text-muted fw-bold small text-uppercase" style="letter-spacing: 0.05em;">Cédula / ID Único</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light border-0 text-primary px-3 rounded-start"><i class="bi bi-credit-card fs-5"></i></span>
+                            <input type="text" name="uid" class="form-control form-control-lg bg-light border-0 rounded-end shadow-none" required placeholder="Ej: EST-04">
+                        </div>
                     </div>
-                    <div class="d-flex justify-content-between">
-                        <a href="{{ url_for('admin_dashboard') }}"
-                            class="btn btn-outline-warning text-dark">Cancelar</a>
-                        <button type="submit" class="btn btn-primary">Crear Usuario</button>
+                    
+                    <div class="mb-4">
+                        <label class="form-label text-muted fw-bold small text-uppercase" style="letter-spacing: 0.05em;">Nombre Completo</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light border-0 text-primary px-3 rounded-start"><i class="bi bi-person-fill fs-5"></i></span>
+                            <input type="text" name="nombre" class="form-control form-control-lg bg-light border-0 rounded-end shadow-none" required placeholder="Nombres y Apellidos">
+                        </div>
+                    </div>
+                    
+                    <div class="mb-5">
+                        <label class="form-label text-muted fw-bold small text-uppercase" style="letter-spacing: 0.05em;">Contraseña de Accesos</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light border-0 text-primary px-3 rounded-start"><i class="bi bi-key-fill fs-5"></i></span>
+                            <input type="password" name="password" class="form-control form-control-lg bg-light border-0 rounded-end shadow-none" placeholder="Opcional. Estatus base: 123456">
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid mt-2">
+                        <button type="submit" class="btn btn-primary btn-lg rounded-pill shadow hover-card fw-bold">Guardar Nuevo Usuario</button>
                     </div>
                 </form>
             </div>
